@@ -22,6 +22,33 @@
                 <p>Data tool for college majors data</p>
             </div>
             
+            <!-- salaries -->
+            <div class="btn-group" data-toggle="buttons">
+                <label class="btn btn-primary">
+                    <input value="P25th" type="radio" name="options" id="option1" autocomplete="off">25th
+                </label>
+                <label class="btn btn-primary active">
+                    <input value="Median" type="radio" name="options" id="option2" autocomplete="off" checked>Median
+                </label>
+                <label class="btn btn-primary">
+                    <input value="P75th" type="radio" name="options" id="option3" autocomplete="off" checked>75th
+                </label>
+		    </div>
+            
+            <!-- salary of unemployment rate -->
+            <div class="btn-group" data-toggle="buttons">
+                <label class="btn btn-primary active">
+                    <input value="Median" type="radio" name="options" id="option1" autocomplete="off">Salary
+                </label>
+                <label class="btn btn-primary">
+                    <input value="Unemployment_rate" type="radio" name="options" id="option2" autocomplete="off" checked>Unemployment Rate
+                </label>
+		    </div>
+            
+            <!-- chart -->
+            <div id="vis">
+                
+            </div>
         </div>
     </body>
     <!-- main script file -->
