@@ -48,7 +48,7 @@ $(function() {
         var xScale;
         var yScale;
         var currentData;
-        var colorScale = d3.scale.category10();
+        var colorScale = d3.scale.category20();
         var currRange;
         var currPlace;
         
@@ -233,19 +233,19 @@ $(function() {
                     .attr('cy', height)
                     .attr('fill', function(d) {return colorScale(d["Location"])})
                     .attr('title', function(d) {return d["Name"]})
-                    .style('opacity', 0.4);
+                    .style('opacity', 0.5);
             
             circles.on('mouseover', function(d) {
                 d3.select(this).style('opacity', 1);
                 tooltip.transition()        
                     .duration(200)      
                     .style("opacity", .9);      
-                tooltip.text(d.Name)  
+                tooltip.html("<strong>"+d.Name+"</strong><br/><strong>Growth Score:</strong> "+d["Growth Score"]+"<br/><strong>Total Funding:</strong> "+d["Total Funding"])  
                     .style("left", (d3.event.pageX) + "px")     
                     .style("top", (d3.event.pageY - 28) + "px");    
             })
             .on('mouseout', function(d) {
-                d3.select(this).style('opacity', 0.4);
+                d3.select(this).style('opacity', 0.5);
                 tooltip.transition()        
                     .duration(500)      
                     .style("opacity", 0);
@@ -268,7 +268,7 @@ $(function() {
                     .attr('cy', function(d) {return yScale(d["Growth Score"])})
                     .attr('fill', function(d) {return colorScale(d["Location"])})
                     .attr('title', function(d) {return d["Name"]})
-                    .style('opacity', 0.4);
+                    .style('opacity', 0.5);
         };
         
         var legendLabel = svg.append('g')
