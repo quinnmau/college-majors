@@ -40,3 +40,18 @@ div.tooltip {
 .control {
     margin-bottom: 10px;
 }
+
+.background {
+    visibility: visible !important;
+    fill: #fff;
+}
+
+.extent {
+    visibility: visible !important;
+    fill: #C8C8C8;
+}
+
+.resize rect {
+    visibility: visible !important;
+    fill: #C8C8C8;
+}

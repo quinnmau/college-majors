@@ -112,7 +112,7 @@ $(function() {
             
             yAxisText.text('Growth Score');
         };
-        
+  
         var filter = function(place) {
             currentData = data.filter(function(d) {
 				return d.Location == place;
@@ -124,16 +124,30 @@ $(function() {
                         .attr('class', 'tooltip')
                         .style('opacity', 0);
         
+        var slider = g.append('g');
+                        
+        var setBrush = function() {
+            var brush = d3.svg.brush()
+                            .x(xScale);
+                            
+            slider.call(brush);
+            
+            slider.selectAll('rect')
+                .attr('height', height);
+        }
+
         var draw = function(data) {
             setScales(data);
             
             setAxes();
             
+            setBrush();
+            
             var circles = g.selectAll('circle')
                             .data(data, function(d) {return d.Name});
                             
             circles.enter().append('circle')
-                    .attr('r', 8)
+                    .attr('r', 10)
                     .attr('cx', function(d) {
                         var amt = d["Total Funding"];
                         return xScale(parseFloat(amt.replace(/[^0-9.]/g, "")));})
@@ -167,7 +181,7 @@ $(function() {
                     .remove();
             
             circles.transition().duration(1500)
-                    .attr('r', 8)
+                    .attr('r', 10)
                     .attr('cx', function(d) {
                         var amt = d["Total Funding"];
                         return xScale(parseFloat(amt.replace(/[^0-9.]/g, "")));
@@ -176,7 +190,12 @@ $(function() {
                     .attr('fill', function(d) {return colorScale(d["Location"])})
                     .attr('title', function(d) {return d["Name"]})
                     .style('opacity', 0.4);
-        };          
+        };
+        
+        
+        
+        
+        /*----------------------------*/          
         draw(data);
         
         $('li').on('click', function() {
