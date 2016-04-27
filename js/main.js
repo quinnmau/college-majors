@@ -99,6 +99,7 @@ $(function() {
             
             var yMin = d3.min(data, function(d) {return +d["Growth Score"]});
             var yMax = d3.max(data, function(d) {return +d["Growth Score"]});
+            console.log(yMin);
             if (yMax == yMin) {
                 yMin = 0;
                 yMax = 2*yMax;
@@ -131,11 +132,13 @@ $(function() {
                 currentData = data;
             } else if (currRange == undefined && currPlace == undefined) {
                 if (Array.isArray(place)) {
+                    console.log(place);
                     currentData = data.filter(function(d) {
                         var amt = d["Total Funding"];
                         var num = parseFloat(amt.replace(/[^0-9.]/g, ""));
                         currRange = place;
-                        return num >= place[0] && num <= place[1];
+                        var score = d["Growth Score"];
+                        return num >= place[0][0] && num <= place[1][0] && score >= place[0][1] && score <= place[1][1];
                     });
                 }
                 if (typeof place == 'string') {
@@ -150,7 +153,8 @@ $(function() {
                         var amt = d["Total Funding"];
                         var num = parseFloat(amt.replace(/[^0-9.]/g, ""));
                         currRange = place;
-                        return num >= place[0] && num <= place[1];
+                        var score = d["Growth Score"];
+                        return num >= place[0][0] && num <= place[1][0] && score >= place[0][1] && score <= place[1][1];
                     });
                 }
                 if (typeof place == 'string') {
@@ -165,7 +169,8 @@ $(function() {
                         var amt = d["Total Funding"];
                         var num = parseFloat(amt.replace(/[^0-9.]/g, ""));
                         currRange = place;
-                        return num >= place[0] && num <= place[1];
+                        var score = d["Growth Score"];
+                        return num >= place[0][0] && num <= place[1][0] && score >= place[0][1] && score <= place[1][1];
                     });
                 }
                 if (typeof place == 'string') {
@@ -180,7 +185,8 @@ $(function() {
                         var amt = d["Total Funding"];
                         var num = parseFloat(amt.replace(/[^0-9.]/g, ""));
                         currRange = place;
-                        return num >= place[0] && num <= place[1];
+                        var score = d["Growth Score"];
+                        return num >= place[0][0] && num <= place[1][0] && score >= place[0][1] && score <= place[1][1];
                     });
                 }
                 if (typeof place == 'string') {
@@ -188,7 +194,8 @@ $(function() {
                         currPlace = place;
                         var amt = d["Total Funding"];
                         var num = parseFloat(amt.replace(/[^0-9.]/g, ""));
-                        return d.Location == place && num >= currRange[0] && num <= currRange[1];
+                        var score = d["Growth Score"];
+                        return d.Location == place && num >= currRange[0][0] && num <= currRange[1][0] && score >= currRange[0][1] && score <= currRange[1][1];
                     });
                 }
             }  
@@ -204,14 +211,16 @@ $(function() {
         var setBrush = function() {
             var brush = d3.svg.brush()
                             .x(xScale)
+                            .y(yScale)
                             .on('brushend', function() {
+                                console.log(brush.extent());
                                 filter(brush.extent());
                                 draw(currentData);
                             });
                             
             slider.call(brush);
             
-            slider.selectAll('rect')
+            slider.selectAll('rect.background')
                 .attr('height', height);    
         };
 
