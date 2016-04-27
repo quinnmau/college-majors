@@ -17,6 +17,11 @@ $(function() {
             var li = $("<li></li>");
             li.text(d);
             li.attr('place', d);
+            li.on('mouseover', function() {
+                $(this).animate({backgroundColor: '#337ab7'}, 'fast');
+            }).on('mouseout', function() {
+                $(this).animate({backgroundColor: '#fff'}, 150);
+            });
             dropdown.append(li);
         });
         //margins for actual data points           
@@ -75,10 +80,18 @@ $(function() {
                 var amt = d["Total Funding"];
                 return parseFloat(amt.replace(/[^0-9.]/g, ""));
             });
+            if (xMax == xMin) {
+                xMin = 0;
+                xMax = 2*xMax;
+            }
             xScale = d3.scale.linear().domain([xMin, xMax]).range([0, width]);
             
             var yMin = d3.min(data, function(d) {return +d["Growth Score"]});
             var yMax = d3.max(data, function(d) {return +d["Growth Score"]});
+            if (yMax == yMin) {
+                yMin = 0;
+                yMax = 2*yMax;
+            }
             yScale = d3.scale.linear().domain([yMin, yMax]).range([height, 0]);
         };
         
@@ -107,6 +120,10 @@ $(function() {
             console.log(currentData);
         }
         
+        var tooltip = d3.select('body').append('div')
+                        .attr('class', 'tooltip')
+                        .style('opacity', 0);
+        
         var draw = function(data) {
             setScales(data);
             
@@ -124,16 +141,26 @@ $(function() {
                     .attr('fill', function(d) {return colorScale(d["Location"])})
                     .attr('title', function(d) {return d["Name"]})
                     .style('opacity', 0.4);
+            
+            circles.on('mouseover', function(d) {
+                d3.select(this).style('opacity', 1);
+                tooltip.transition()        
+                    .duration(200)      
+                    .style("opacity", .9);      
+                tooltip.text(d.Name)  
+                    .style("left", (d3.event.pageX) + "px")     
+                    .style("top", (d3.event.pageY - 28) + "px");    
+            })
+            .on('mouseout', function(d) {
+                d3.select(this).style('opacity', 0.4);
+                tooltip.transition()        
+                    .duration(500)      
+                    .style("opacity", 0);
+            });
                     
             circles.exit()
                     .transition()
                     .duration(1000)
-                    // .attr('cx', function(d) {
-                    //     var amt = d["Total Funding"];
-                    //     return xScale(parseFloat(amt.replace(/[^0-9.]/g, "")));
-                    // })
-                    // .attr('cy', function(d) {return yScale(d["Growth Score"])})
-                    // .attr('r', 8)
                     .attr('fill', function(d) {return colorScale(d["Location"])})
                     .attr('title', function(d) {return d["Name"]})
                     .style('opacity', function(d, i) {return 0.4/(i*1.8)})
