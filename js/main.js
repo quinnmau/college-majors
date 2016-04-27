@@ -40,6 +40,8 @@ $(function() {
         var yScale;
         var currentData;
         var colorScale = d3.scale.category10();
+        var currRange;
+        var currPlace;
         
         //canvas for chart
         var svg = d3.select('#vis')
@@ -114,18 +116,71 @@ $(function() {
         };
   
         var filter = function(place) {
-            currentData = data.filter(function(d) {
+            if (currRange == undefined && currPlace == undefined) {
                 if (Array.isArray(place)) {
-                    var amt = d["Total Funding"];
-                    var num = parseFloat(amt.replace(/[^0-9.]/g, ""));
-                    return num >= place[0] && num <= place[1];
+                    currentData = data.filter(function(d) {
+                        var amt = d["Total Funding"];
+                        var num = parseFloat(amt.replace(/[^0-9.]/g, ""));
+                        currRange = place;
+                        return num >= place[0] && num <= place[1];
+                    });
                 }
                 if (typeof place == 'string') {
-				    return d.Location == place;
+                    currentData = data.filter(function(d) {
+                        currPlace = place;
+                        return d.Location == place;
+                    });
                 }
-			});
+            } else if (currRange != undefined && currPlace == undefined) {
+                if (Array.isArray(place)) {
+                    currentData = currentData.filter(function(d) {
+                        var amt = d["Total Funding"];
+                        var num = parseFloat(amt.replace(/[^0-9.]/g, ""));
+                        currRange = place;
+                        return num >= place[0] && num <= place[1];
+                    });
+                }
+                if (typeof place == 'string') {
+                    currentData = currentData.filter(function(d) {
+                        currPlace = place;
+                        return d.Location == place;
+                    });
+                }
+            } else if (currRange == undefined && currPlace != undefined) {
+                if (Array.isArray(place)) {
+                    currentData = currentData.filter(function(d) {
+                        var amt = d["Total Funding"];
+                        var num = parseFloat(amt.replace(/[^0-9.]/g, ""));
+                        currRange = place;
+                        return num >= place[0] && num <= place[1];
+                    });
+                }
+                if (typeof place == 'string') {
+                    currentData = data.filter(function(d) {
+                        currPlace = place;
+                        return d.Location == place;
+                    });
+                }
+            } else {
+                if (Array.isArray(place)) {
+                    currentData = currentData.filter(function(d) {
+                        var amt = d["Total Funding"];
+                        var num = parseFloat(amt.replace(/[^0-9.]/g, ""));
+                        currRange = place;
+                        return num >= place[0] && num <= place[1];
+                    });
+                }
+                if (typeof place == 'string') {
+                    currentData = data.filter(function(d) {
+                        currPlace = place;
+                        var amt = d["Total Funding"];
+                        var num = parseFloat(amt.replace(/[^0-9.]/g, ""));
+                        return d.Location == place && num >= currRange[0] && num <= currRange[1];
+                    });
+                }
+            }  
             console.log(currentData);
-        }
+        };
         
         var tooltip = d3.select('body').append('div')
                         .attr('class', 'tooltip')
