@@ -283,11 +283,9 @@ $(function() {
         });
         
         /*controls*/
-        $(function() {
-            $( "#slider" ).slider({
-                range: true,
-                values: [0, 3125]
-            });
+        $('#zoom-out').on('click', function() {
+            filter('all');
+            draw(currentData);
         });
                             
     });
