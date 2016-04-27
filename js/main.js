@@ -115,7 +115,14 @@ $(function() {
   
         var filter = function(place) {
             currentData = data.filter(function(d) {
-				return d.Location == place;
+                if (Array.isArray(place)) {
+                    var amt = d["Total Funding"];
+                    var num = parseFloat(amt.replace(/[^0-9.]/g, ""));
+                    return num >= place[0] && num <= place[1];
+                }
+                if (typeof place == 'string') {
+				    return d.Location == place;
+                }
 			});
             console.log(currentData);
         }
@@ -128,13 +135,17 @@ $(function() {
                         
         var setBrush = function() {
             var brush = d3.svg.brush()
-                            .x(xScale);
+                            .x(xScale)
+                            .on('brushend', function() {
+                                filter(brush.extent());
+                                draw(currentData);
+                            });
                             
             slider.call(brush);
             
             slider.selectAll('rect')
-                .attr('height', height);
-        }
+                .attr('height', height);    
+        };
 
         var draw = function(data) {
             setScales(data);
