@@ -37,12 +37,12 @@ $(function() {
         var margin = {
             left: 70,
             bottom: 100,
-            right: 50,
+            right: 175,
             top: 50
         };
         
         //height and width of data points container
-        var width = 1000 - margin.left - margin.right;
+        var width = 1125 - margin.left - margin.right;
         var height = 600 - margin.top - margin.bottom;
         
         var xScale;
@@ -55,7 +55,7 @@ $(function() {
         //canvas for chart
         var svg = d3.select('#vis')
                     .append('svg')
-                    .attr('width', 1000)
+                    .attr('width', 1125)
                     .attr('height', 600);
         
         //container for data points
@@ -271,11 +271,22 @@ $(function() {
                     .style('opacity', 0.4);
         };
         
+        var legendLabel = svg.append('g')
+                            .attr('class', 'legendLinear')
+                            .attr('transform', 'translate(' + (margin.left + width + 50) + ', ' + margin.top + ')');
         
-        
-        
+        var setLegend = function() {
+            var legend = d3.legend.color()
+                            .shapeWidth(30)
+                            .orient('vertical')
+                            .scale(colorScale);
+                            
+            legendLabel.call(legend);
+        };
+    
         /*----------------------------*/          
         draw(data);
+        setLegend();
         
         $('li').on('click', function() {
             filter($(this).attr('place'));
