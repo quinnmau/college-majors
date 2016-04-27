@@ -13,6 +13,15 @@ $(function() {
             }
         });
         var dropdown = $('#dropdown');
+        var li = $("<li></li>");
+        li.text('All');
+        li.attr('place', 'all');
+        li.on('mouseover', function() {
+            $(this).animate({backgroundColor: '#337ab7'}, 'fast');
+        }).on('mouseout', function() {
+            $(this).animate({backgroundColor: '#fff'}, 150);
+        });
+        dropdown.append(li);
         places.forEach(function(d) {
             var li = $("<li></li>");
             li.text(d);
@@ -116,7 +125,11 @@ $(function() {
         };
   
         var filter = function(place) {
-            if (currRange == undefined && currPlace == undefined) {
+            if (typeof place == 'string' && place == 'all') {
+                currPlace = undefined;
+                currRange = undefined;
+                currentData = data;
+            } else if (currRange == undefined && currPlace == undefined) {
                 if (Array.isArray(place)) {
                     currentData = data.filter(function(d) {
                         var amt = d["Total Funding"];
