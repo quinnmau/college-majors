@@ -10,6 +10,8 @@
         <script src="https://code.jquery.com/jquery.min.js"></script>
 		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
 		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+        <script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
+        <link href='http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/themes/base/jquery-ui.css' rel='stylesheet' type='text/css'>
 		<script src="http://d3js.org/d3.v3.min.js"></script>
         
         <!-- custom files -->
@@ -22,29 +24,16 @@
                 <p>Data tool for college majors data</p>
             </div>
             
-            <!-- salaries -->
-            <div class="btn-group" data-toggle="buttons">
-                <label class="btn btn-primary">
-                    <input value="P25th" type="radio" name="options" id="option1" autocomplete="off">25th
-                </label>
-                <label class="btn btn-primary active">
-                    <input value="Median" type="radio" name="options" id="option2" autocomplete="off" checked>Median
-                </label>
-                <label class="btn btn-primary">
-                    <input value="P75th" type="radio" name="options" id="option3" autocomplete="off" checked>75th
-                </label>
-		    </div>
-            
-            <!-- salary of unemployment rate -->
-            <div class="btn-group" data-toggle="buttons">
-                <label class="btn btn-primary active">
-                    <input value="Median" type="radio" name="options" id="option1" autocomplete="off">Salary
-                </label>
-                <label class="btn btn-primary">
-                    <input value="Unemployment_rate" type="radio" name="options" id="option2" autocomplete="off" checked>Unemployment Rate
-                </label>
-		    </div>
-            
+            <div id="slider"></div>
+            <div class="dropdown">
+                <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">Dropdown Example
+                <span class="caret"></span></button>
+                <ul id="dropdown" class="dropdown-menu">
+                    <!--<li place="Bay Area">Bay Area</li>
+                    <li place="New York">New York</li>
+                    <li place="Boston">Boston</li>-->
+                </ul>
+            </div>
             <!-- chart -->
             <div id="vis">
                 

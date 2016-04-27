@@ -1,9 +1,24 @@
 'use strict';
 
 $(function() {
-    d3.csv('https://raw.githubusercontent.com/fivethirtyeight/data/master/college-majors/all-ages.csv', function(error, data) {
+    d3.csv('https://raw.githubusercontent.com/curran/data/gh-pages/mattermark/2015-top-100-analytics-startups.csv', function(error, data) {
         console.log(data);
-         
+        
+        //populate dropdown
+        var places = [];
+        data.forEach(function(d) {
+            var location = d.Location;
+            if ($.inArray(location, places) == -1) {
+                places.push(location);
+            }
+        });
+        var dropdown = $('#dropdown');
+        places.forEach(function(d) {
+            var li = $("<li></li>");
+            li.text(d);
+            li.attr('place', d);
+            dropdown.append(li);
+        });
         //margins for actual data points           
         var margin = {
             left: 70,
@@ -19,8 +34,7 @@ $(function() {
         var xScale;
         var yScale;
         var currentData;
-        var colorScale = d3.scale.category20();
-        var level = 'Median';
+        var colorScale = d3.scale.category10();
         
         //canvas for chart
         var svg = d3.select('#vis')
@@ -52,19 +66,22 @@ $(function() {
                             .attr('transform', 'translate(' + (margin.left - 40) + ', ' + (margin.top + height/2) + ') rotate(-90)')
                             .attr('class', 'title');
         
-        //sets x and y scales. y scale varies on type of measure (i.e. salary or unemployment)                    
         var setScales = function(data) {
-            var majors = data.map(function(d) {return d.Major});
+            var xMin = d3.min(data, function(d) {
+                var amt = d["Total Funding"];
+                return parseFloat(amt.replace(/[^0-9.]/g, ""));
+            });
+            var xMax = d3.max(data, function(d) {
+                var amt = d["Total Funding"];
+                return parseFloat(amt.replace(/[^0-9.]/g, ""));
+            });
+            xScale = d3.scale.linear().domain([xMin, xMax]).range([0, width]);
             
-            xScale = d3.scale.ordinal().domain(majors).rangeBands([0, width], 0.2);
-            
-            var yMin = d3.min(data, function(d) {return d[level];});
-            var yMax = d3.max(data, function(d) {return d[level];});
-            
-            yScale = d3.scale.linear().domain([0, yMax]).range([height, 0]);
+            var yMin = d3.min(data, function(d) {return +d["Growth Score"]});
+            var yMax = d3.max(data, function(d) {return +d["Growth Score"]});
+            yScale = d3.scale.linear().domain([yMin, yMax]).range([height, 0]);
         };
         
-        //sets x and y axes.
         var setAxes = function() {
             var xAxis = d3.svg.axis()
                             .scale(xScale)
@@ -74,64 +91,79 @@ $(function() {
                             .scale(yScale)
                             .orient('left');
                             
-           xAxisLabel.transition().duration(1500).call(xAxis);
-           
-           yAxisLabel.transition().duration(1500).call(yAxis);   
-           
-           xAxisText.text('Major');
-           
-           yAxisText.text(level);             
+            xAxisLabel.transition().duration(1500).call(xAxis);
+            
+            yAxisLabel.transition().duration(1500).call(yAxis);
+            
+            xAxisText.text('Total Funding (Millions)');
+            
+            yAxisText.text('Growth Score');
         };
         
-        var filterData = function() {
-            currentData = data.sort(function(a, b) {
-                if (a["Major_category"] == b["Major_category"]) {
-                    return a["Major"].localeCompare(b["Major"]);
-                } else {
-                    return a["Major_category"].localeCompare(b["Major_category"]);
-                }
-            });
-        };
+        var filter = function(place) {
+            currentData = data.filter(function(d) {
+				return d.Location == place;
+			});
+            console.log(currentData);
+        }
         
         var draw = function(data) {
             setScales(data);
             
             setAxes();
             
-            var rects = g.selectAll('rect')
-                            .data(data, function(d) {return d.Major;});
+            var circles = g.selectAll('circle')
+                            .data(data, function(d) {return d.Name});
                             
-            rects.enter().append('rect')
-                    .attr('x', function(d) {return xScale(d.Major);})
-                    .attr('y', height)
-                    .attr('width', xScale.rangeBand())
-                    .attr('height', 0)
-                    .attr('title', function(d) {return d[level];});
+            circles.enter().append('circle')
+                    .attr('r', 8)
+                    .attr('cx', function(d) {
+                        var amt = d["Total Funding"];
+                        return xScale(parseFloat(amt.replace(/[^0-9.]/g, "")));})
+                    .attr('cy', height)
+                    .attr('fill', function(d) {return colorScale(d["Location"])})
+                    .attr('title', function(d) {return d["Name"]})
+                    .style('opacity', 0.4);
                     
-            rects.exit().remove();
-            
-            rects.transition()
+            circles.exit()
+                    .transition()
                     .duration(1000)
-                    .attr('x', function(d) {return xScale(d.Major);})
-                    .attr('y', function(d) {return yScale(d[level]);})
-                    .attr('width', xScale.rangeBand())
-                    .attr('height', function(d) {return height - yScale(d[level]);})
-                    .style('fill', function(d) {return colorScale(d.Major_category);})
-                    .attr('title', function(d) {return d[level]});
-        };
-        
-        filterData();
-        draw(currentData);
-        
-        $('input').on('change', function() {
+                    // .attr('cx', function(d) {
+                    //     var amt = d["Total Funding"];
+                    //     return xScale(parseFloat(amt.replace(/[^0-9.]/g, "")));
+                    // })
+                    // .attr('cy', function(d) {return yScale(d["Growth Score"])})
+                    // .attr('r', 8)
+                    .attr('fill', function(d) {return colorScale(d["Location"])})
+                    .attr('title', function(d) {return d["Name"]})
+                    .style('opacity', function(d, i) {return 0.4/(i*1.8)})
+                    .remove();
             
+            circles.transition().duration(1500)
+                    .attr('r', 8)
+                    .attr('cx', function(d) {
+                        var amt = d["Total Funding"];
+                        return xScale(parseFloat(amt.replace(/[^0-9.]/g, "")));
+                    })
+                    .attr('cy', function(d) {return yScale(d["Growth Score"])})
+                    .attr('fill', function(d) {return colorScale(d["Location"])})
+                    .attr('title', function(d) {return d["Name"]})
+                    .style('opacity', 0.4);
+        };          
+        draw(data);
+        
+        $('li').on('click', function() {
+            filter($(this).attr('place'));
+            draw(currentData);
         });
         
-        // $("rect").tooltip({
-		// 	'container': 'body',
-		// 	'placement': 'top'
-		// });
-        
+        /*controls*/
+        $(function() {
+            $( "#slider" ).slider({
+                range: true,
+                values: [0, 3125]
+            });
+        });
                             
     });
 });
